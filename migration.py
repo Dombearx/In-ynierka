@@ -38,8 +38,12 @@ def migSel(populations, numOfIslands):
 
     sortByFitness(wholePopulation)
 
+    
     for i in range(0, len(wholePopulation), islandSize):
         newIslands.append(wholePopulation[i:i + islandSize])
+        lastIndex = i + islandSize
+
+    newIslands[-1] += wholePopulation[lastIndex:]
 
     for i, newIs in enumerate(newIslands):
         if(i >= len(populations)):
