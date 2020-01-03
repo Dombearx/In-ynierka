@@ -22,7 +22,7 @@ toolbox.register("select", tools.selTournament, tournsize=3)
 toolbox.register("map", map)
 ISLANDS = 10
 #toolbox.register("migrate", tools.migRing, k=15, selection=tools.selBest)
-toolbox.register("migrate", mig.migSel, numOfIslands=ISLANDS)
+toolbox.register("migrate", mig.migSel, numOfIslands=ISLANDS + 5)
 NGEN, FREQ = 2, 1
 toolbox.register("algorithm",algorithms.eaSimple, toolbox=toolbox, cxpb=0.5, mutpb=0.2, ngen=FREQ, verbose=False)
 islands = [toolbox.population(n=20) for i in range(ISLANDS)]

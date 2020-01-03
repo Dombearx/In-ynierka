@@ -42,7 +42,10 @@ def migSel(populations, numOfIslands):
         newIslands.append(wholePopulation[i:i + islandSize])
 
     for i, newIs in enumerate(newIslands):
-        populations[i] = newIs
+        if(i >= len(populations)):
+            populations.append(newIs)
+        else:
+            populations[i] = newIs
 
     #populations = newIslands[:]
 
