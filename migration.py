@@ -47,6 +47,9 @@ def migSel(populations, numOfIslands):
         else:
             populations[i] = newIs
 
+    if(len(populations) > len(newIslands)):
+        del populations[len(newIslands):]
+
     #populations = newIslands[:]
 
 
