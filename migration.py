@@ -1,8 +1,10 @@
 from __future__ import division
+import random
 
 
 def sortByFitness(wholePopulation):
     wholePopulation.sort(key=lambda x: x.fitness, reverse=False)
+
 
 def getMinFitness(wholePopulation):
 
@@ -14,6 +16,7 @@ def getMinFitness(wholePopulation):
 
     return minFit
 
+
 def getMaxFitness(wholePopulation):
 
     maxFit = wholePopulation[0].fitness
@@ -24,12 +27,39 @@ def getMaxFitness(wholePopulation):
 
     return maxFit
 
+
+def isDominating(individual, other):
+    count = 0
+    for x, y in zip(individual, other):
+        if x < y:
+            return False
+        if x == y:
+            count += 1
+
+    if count == len(individual):
+        return False
+    return True
+
+
+def getParetoFronts(wholePopulation):
+    fronts = []
+
+    currentFront = []
+    for individual in wholePopulation:
+        for otherIndividual in wholePopulation:
+            if(isDominating(otherIndividual, individual)):
+                continue
+    return fronts
+
+
 def migSel(populations, numOfIslands):
     wholePopulation = []
 
-    print("before:")
+    numOfIslands += random.randint(-5, 5)
+
+    # print("before:")
     for population in populations:
-        print(getMaxFitness(population))
+        #    print(getMaxFitness(population))
         wholePopulation += population
 
     islandSize = int(len(wholePopulation) / numOfIslands)
@@ -38,7 +68,6 @@ def migSel(populations, numOfIslands):
 
     sortByFitness(wholePopulation)
 
-    
     for i in range(0, len(wholePopulation), islandSize):
         newIslands.append(wholePopulation[i:i + islandSize])
         lastIndex = i + islandSize
@@ -56,10 +85,9 @@ def migSel(populations, numOfIslands):
 
     #populations = newIslands[:]
 
-
-    print("after:")
-    for population in populations:
-        print(getMaxFitness(population))
+    # print("after:")
+    # for population in populations:
+    #    print(getMaxFitness(population))
 
 
 def migRing(populations, k, selection, replacement=None, migarray=None):
@@ -103,11 +131,13 @@ def migRing(populations, k, selection, replacement=None, migarray=None):
             immigrants[from_deme] = emigrants[from_deme]
         else:
             # Else select those who will be replaced
-            immigrants[from_deme].extend(replacement(populations[from_deme], k))
+            immigrants[from_deme].extend(
+                replacement(populations[from_deme], k))
 
     for from_deme, to_deme in enumerate(migarray):
         for i, immigrant in enumerate(immigrants[to_deme]):
             indx = populations[to_deme].index(immigrant)
             populations[to_deme][indx] = emigrants[from_deme][i]
+
 
 __all__ = ['migRing', 'migSel']
