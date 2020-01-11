@@ -44,23 +44,7 @@ def isDominating(individual, other):
         return False
     return True
 
-# TEST
 
-
-def sortLogNondominated(individuals, k, first_front_only=False):
-    """Sort *individuals* in pareto non-dominated fronts using the Generalized
-    Reduced Run-Time Complexity Non-Dominated Sorting Algorithm presented by
-    Fortin et al. (2013).
-    :param individuals: A list of individuals to select from.
-    :returns: A list of Pareto fronts (lists), with the first list being the
-              true Pareto front.
-    """
-    if k == 0:
-        return []
-
-    # Separate individuals according to unique fitnesses
-
-    print("Class in nondominated: ", type(individuals[0]))
 
 # jeszcze nie gotowe - użyjemy wbudownej funckji jak będzie działać
 
