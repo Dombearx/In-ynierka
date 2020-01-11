@@ -1,5 +1,9 @@
 from __future__ import division
 import random
+from deap import tools
+
+# sortuje według fitness niemalejąco
+# do selekcji konwekcyjnej dla problemów jednokryterialnych
 
 
 def sortByFitness(wholePopulation):
@@ -40,6 +44,26 @@ def isDominating(individual, other):
         return False
     return True
 
+# TEST
+
+
+def sortLogNondominated(individuals, k, first_front_only=False):
+    """Sort *individuals* in pareto non-dominated fronts using the Generalized
+    Reduced Run-Time Complexity Non-Dominated Sorting Algorithm presented by
+    Fortin et al. (2013).
+    :param individuals: A list of individuals to select from.
+    :returns: A list of Pareto fronts (lists), with the first list being the
+              true Pareto front.
+    """
+    if k == 0:
+        return []
+
+    # Separate individuals according to unique fitnesses
+
+    print("Class in nondominated: ", type(individuals[0]))
+
+# jeszcze nie gotowe - użyjemy wbudownej funckji jak będzie działać
+
 
 def getParetoFronts(wholePopulation):
     fronts = []
@@ -51,20 +75,44 @@ def getParetoFronts(wholePopulation):
                 continue
     return fronts
 
+# Migracja między wyspami w selekcji konwekcyjnej dla problemów WIELOKRYTERIALNYCH
+
+
+def migSelOneFrontOneIsland(populations):
+    wholePopulation = []
+
+    for population in populations:
+        wholePopulation += population
+
+    pareto_fronts = tools.sortNondominated(
+        wholePopulation, len(wholePopulation))
+
+    print("Max fittnes: ", getMaxFitness(wholePopulation))
+    for i, newIs in enumerate(pareto_fronts):
+        if(i >= len(populations)):
+            populations.append(newIs)
+        else:
+            populations[i] = newIs
+
+    if(len(populations) > len(pareto_fronts)):
+        del populations[len(pareto_fronts):]
+
+# Migracja między wyspami w selekcji konwekcyjnej dla problemów JEDNOKRYTERIALNYCH
+
 
 def migSel(populations, numOfIslands):
     wholePopulation = []
 
-    numOfIslands += random.randint(-5, 5)
-
-    # print("before:")
     for population in populations:
-        #    print(getMaxFitness(population))
         wholePopulation += population
 
     islandSize = int(len(wholePopulation) / numOfIslands)
 
     newIslands = []
+
+    print("Max fittnes: ", getMaxFitness(wholePopulation))
+
+    migSelOneFrontOneIsland(populations)
 
     sortByFitness(wholePopulation)
 
@@ -82,12 +130,6 @@ def migSel(populations, numOfIslands):
 
     if(len(populations) > len(newIslands)):
         del populations[len(newIslands):]
-
-    #populations = newIslands[:]
-
-    # print("after:")
-    # for population in populations:
-    #    print(getMaxFitness(population))
 
 
 def migRing(populations, k, selection, replacement=None, migarray=None):
