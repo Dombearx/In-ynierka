@@ -97,8 +97,6 @@ def migSel(populations, numOfIslands):
 
     newIslands = []
 
-    migSelOneFrontOneIsland(populations)
-
     sortByFitness(wholePopulation)
 
     for i in range(0, len(wholePopulation), islandSize):
