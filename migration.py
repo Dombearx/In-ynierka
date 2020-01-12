@@ -1,6 +1,6 @@
 from __future__ import division
 import random
-from deap import tools
+from deap import tools, creator
 
 # sortuje według fitness niemalejąco
 # do selekcji konwekcyjnej dla problemów jednokryterialnych
@@ -21,7 +21,12 @@ def getMinFitness(wholePopulation):
     return minFit
 
 
-def getMaxFitness(wholePopulation):
+def getMaxFitness(populations):
+
+    wholePopulation = []
+
+    for pop in populations:
+        wholePopulation += pop
 
     maxFit = wholePopulation[0].fitness
 
@@ -43,7 +48,6 @@ def isDominating(individual, other):
     if count == len(individual):
         return False
     return True
-
 
 
 # jeszcze nie gotowe - użyjemy wbudownej funckji jak będzie działać
@@ -71,7 +75,6 @@ def migSelOneFrontOneIsland(populations):
     pareto_fronts = tools.sortNondominated(
         wholePopulation, len(wholePopulation))
 
-    print("Max fittnes: ", getMaxFitness(wholePopulation))
     for i, newIs in enumerate(pareto_fronts):
         if(i >= len(populations)):
             populations.append(newIs)
@@ -93,8 +96,6 @@ def migSel(populations, numOfIslands):
     islandSize = int(len(wholePopulation) / numOfIslands)
 
     newIslands = []
-
-    print("Max fittnes: ", getMaxFitness(wholePopulation))
 
     migSelOneFrontOneIsland(populations)
 

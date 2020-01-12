@@ -9,21 +9,21 @@ creator.create("Individual", list, fitness=creator.FitnessMax)
 toolbox = base.Toolbox()
 
 # Atrybut typu bool - 0 albo 1
-toolbox.register("attr_bool", random.randint, 0, 1)
+toolbox.register("attr_float", random.uniform, 0, 1)
 toolbox.register("individual", tools.initRepeat,
-                 creator.Individual, toolbox.attr_bool, n=100)
+                 creator.Individual, toolbox.attr_float, n=100)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
 
 # Funkcja celu - suma wartości atrybutów
 def evalOneMax(individual):
-    return sum(individual),
+    return (sum(individual), len(individual))
 
 
 toolbox.register("evaluate", evalOneMax)
 toolbox.register("mate", tools.cxTwoPoint)
 toolbox.register("mutate", tools.mutFlipBit, indpb=0.05)
-toolbox.register("select", tools.selTournament, tournsize=3)
+toolbox.register("select", tools.selNSGA2)
 
 toolbox.register("map", map)
 
@@ -31,7 +31,7 @@ toolbox.register("map", map)
 ISLANDS = 10
 
 # Domyślna funkcja migracji - pierścień
-# toolbox.register("migrate", tools.migRing, k=15, selection=tools.selBest)
+#toolbox.register("migrate", tools.migRing, k=15, selection=tools.selBest)
 
 # dodanie migracji - mig.migSel to funkcja migracji selekcji konwekcyjnej
 # toolbox.register("migrate", mig.migSel,
@@ -42,15 +42,19 @@ toolbox.register("migrate", mig.migSelOneFrontOneIsland)
 
 
 # liczba generacji, jak często następuje migracja (co ile zmian całej populacji)
-NGEN, FREQ = 200, 1
+NGEN, FREQ = 20, 1
 
 # ngen = FREQ oznacza ile wykonań algorytmu się wykona przy jednym uruchomieniu funkcji
 toolbox.register("algorithm", algorithms.eaSimple, toolbox=toolbox,
                  cxpb=0.5, mutpb=0.2, ngen=FREQ, verbose=False)
 
+# toolbox.register("algorithm", algorithms.varAnd, toolbox=toolbox,
+#                 cxpb=0.5, mutpb=0.2)
+
 # utworzenie populacji początkowej
 islands = [toolbox.population(n=20) for i in range(ISLANDS)]
 for i in range(0, NGEN, FREQ):
+    print("Max fittnes: ", mig.getMaxFitness(islands))
     results = toolbox.map(toolbox.algorithm, islands)
 
     islands = [island for island, logbook in results]
