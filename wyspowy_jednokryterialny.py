@@ -47,7 +47,7 @@ stats.register("min", numpy.min)
 stats.register("max", numpy.max)
 
 logbook = tools.Logbook()
-logbook.header = "gen", "deme", "evals", "std", "min", "avg", "max"
+logbook.header = "gen", "evals", "std", "min", "avg", "max"
 
 
 # liczba generacji, jak często następuje migracja (co ile zmian całej populacji)
@@ -64,7 +64,6 @@ toolbox.register("algorithm", algorithms.eaSimple, toolbox=toolbox,
 # utworzenie populacji początkowej
 res = []
 numOfIterations = 1
-shouldEnd = False
 logbooks = []
 
 
