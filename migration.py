@@ -1,7 +1,7 @@
 from __future__ import division
 import random
 from deap import tools, creator
-
+import statistics
 # sortuje według fitness niemalejąco
 # do selekcji konwekcyjnej dla problemów jednokryterialnych
 
@@ -10,31 +10,36 @@ def sortByFitness(wholePopulation):
     wholePopulation.sort(key=lambda x: x.fitness, reverse=False)
 
 
-def getMinFitness(wholePopulation):
+def getMinFitness(island):
 
-    minFit = wholePopulation[0].fitness
+    minFit = island[0].fitness
 
-    for individual in wholePopulation[1:]:
+    for individual in island[1:]:
         if individual.fitness < minFit:
             minFit = individual.fitness
 
     return minFit
 
 
-def getMaxFitness(populations):
+def getMaxFitness(island):
 
-    wholePopulation = []
+    maxFit = island[0].fitness
 
-    for pop in populations:
-        wholePopulation += pop
-
-    maxFit = wholePopulation[0].fitness
-
-    for individual in wholePopulation[1:]:
+    for individual in island[1:]:
         if individual.fitness > maxFit:
             maxFit = individual.fitness
 
     return maxFit
+
+
+def getMeanFitness(island):
+
+    fitnesses = []
+
+    for individual in island:
+        fitnesses.append(individual.fitness.values[0])
+
+    return statistics.mean(fitnesses)
 
 
 def isDominating(individual, other):
