@@ -1,6 +1,8 @@
 import random
 from deap import creator, base, tools, algorithms
 import migration as mig
+import time
+import utils
 
 # Każdy osobnik - individual ma liczbę atrybutó3 = len(weights), jeżeli -1 - minimaliazcja, jeżeli 1 - maksymalizacja
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))
@@ -44,21 +46,43 @@ NGEN, FREQ = 200, 10
 CXPB, MUTPB = 0.5, 0.2
 # ngen = FREQ oznacza ile wykonań algorytmu się wykona przy jednym uruchomieniu funkcji
 toolbox.register("algorithm", algorithms.eaSimple, toolbox=toolbox,
-                 cxpb=CXPB, mutpb=MUTPB, ngen=FREQ, verbose=False)
+                 stats=stats, cxpb=CXPB, mutpb=MUTPB, ngen=FREQ, verbose=False)
 
 # toolbox.register("algorithm", algorithms.varAnd, toolbox=toolbox,
 #                 cxpb=0.5, mutpb=0.2)
 
 # utworzenie populacji początkowej
-islands = [toolbox.population(n=300) for i in range(ISLANDS)]
-for i in range(0, NGEN, FREQ):
-    #print("Max fittnes: ", mig.getMaxFitness(islands))
-    results = toolbox.map(toolbox.algorithm, islands)
 
-    islands = [island for island, logbook in results]
+res = []
+numOfIterations = 1
+shouldEnd = False
+for _ in range(0, numOfIterations):
+    start_time = time.time()
+    islands = [toolbox.population(n=300) for i in range(ISLANDS)]
+    for i in range(0, NGEN, FREQ):
 
-    toolbox.migrate(islands)
+        results = toolbox.map(toolbox.algorithm, islands)
 
-    if(mig.getMaxFitness(islands).values[0] == 100):
-        print("Optimal individual in", i, "generations")
-        break
+        islands = [island for island, logbook in results]
+
+        toolbox.migrate(islands)
+
+        print("Islands: ")
+        for island in islands:
+            print("Min fittnes: ", mig.getMinFitness(island))
+            print("Mean fittnes: ", mig.getMeanFitness(island))
+            print("Max fittnes: ", mig.getMaxFitness(island))
+            print("---------------------------")
+            if mig.getMaxFitness(island).values[0] == 100:
+                print("Optimal individual in", i, "generations")
+                res.append((i, time.time() - start_time))
+                shouldEnd = True
+                break
+
+        if shouldEnd == True:
+            break
+
+
+for r in res:
+    print(r)
+utils.makelogFile(res, "konw.txt")
