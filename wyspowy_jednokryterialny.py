@@ -1,6 +1,9 @@
 import random
 from deap import creator, base, tools, algorithms
 import migration as mig
+import time
+import utils
+import numpy
 
 # Każdy osobnik - individual ma liczbę atrybutó3 = len(weights), jeżeli -1 - minimaliazcja, jeżeli 1 - maksymalizacja
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))
@@ -37,28 +40,56 @@ toolbox.register("migrate", tools.migRing, k=15, selection=tools.selBest)
 # dodanie migracji - mig.migSel to funkcja migracji selekcji konwekcyjnej
 #toolbox.register("migrate", mig.migSel, numOfIslands=ISLANDS)
 
+stats = tools.Statistics(lambda ind: ind.fitness.values)
+stats.register("avg", numpy.mean)
+stats.register("std", numpy.std)
+stats.register("min", numpy.min)
+stats.register("max", numpy.max)
+
+logbook = tools.Logbook()
+logbook.header = "gen", "deme", "evals", "std", "min", "avg", "max"
+
 
 # liczba generacji, jak często następuje migracja (co ile zmian całej populacji)
-NGEN, FREQ = 200, 1
+NGEN, FREQ = 10, 2
 
 CXPB, MUTPB = 0.5, 0.2
 # ngen = FREQ oznacza ile wykonań algorytmu się wykona przy jednym uruchomieniu funkcji
 toolbox.register("algorithm", algorithms.eaSimple, toolbox=toolbox,
-                 cxpb=CXPB, mutpb=MUTPB, ngen=FREQ, verbose=False)
+                 stats=stats, cxpb=CXPB, mutpb=MUTPB, ngen=FREQ, verbose=False)
 
 # toolbox.register("algorithm", algorithms.varAnd, toolbox=toolbox,
 #                 cxpb=0.5, mutpb=0.2)
 
 # utworzenie populacji początkowej
-islands = [toolbox.population(n=300) for i in range(ISLANDS)]
-for i in range(0, NGEN, FREQ):
-    #print("Max fittnes: ", mig.getMaxFitness(islands))
-    results = toolbox.map(toolbox.algorithm, islands)
+res = []
+numOfIterations = 1
+shouldEnd = False
+logbooks = []
 
-    islands = [island for island, logbook in results]
 
-    toolbox.migrate(islands)
+for _ in range(0, numOfIterations):
+    start_time = time.time()
+    islands = [toolbox.population(n=300) for i in range(ISLANDS)]
+    for i in range(0, NGEN, FREQ):
 
-    if(mig.getMaxFitness(islands).values[0] == 100):
-        print("Optimal individual in", i, "generations")
-        break
+        results = toolbox.map(toolbox.algorithm, islands)
+
+        #islands = [island for island, logbook in results]
+        #logbooks = [logbook for island, logbook in results]
+
+        ziped = list(map(list, zip(*results)))
+
+        islands = ziped[0]
+
+        if i == 0:
+            for logbook in ziped[1]:
+                logbooks.append(logbook)
+        else:
+            for i, logbook in enumerate(ziped[1]):
+                logbooks[i].append(logbook)
+
+        toolbox.migrate(islands)
+
+for logbook in logbooks:
+    print(logbook)
