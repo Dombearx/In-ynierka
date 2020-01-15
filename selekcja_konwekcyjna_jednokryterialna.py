@@ -46,7 +46,7 @@ NGEN, FREQ = 200, 10
 CXPB, MUTPB = 0.5, 0.2
 # ngen = FREQ oznacza ile wykonań algorytmu się wykona przy jednym uruchomieniu funkcji
 toolbox.register("algorithm", algorithms.eaSimple, toolbox=toolbox,
-                 stats=stats, cxpb=CXPB, mutpb=MUTPB, ngen=FREQ, verbose=False)
+                 cxpb=CXPB, mutpb=MUTPB, ngen=FREQ, verbose=False)
 
 # toolbox.register("algorithm", algorithms.varAnd, toolbox=toolbox,
 #                 cxpb=0.5, mutpb=0.2)
