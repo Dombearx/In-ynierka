@@ -30,34 +30,40 @@ def evalOneMax(individual):
 
 
 toolbox.register("evaluate", evalOneMax)
+
+# test
+BOUND_LOW, BOUND_UP = 0.0, 1.0
+toolbox.register("mate", tools.cxSimulatedBinaryBounded,
+                 low=BOUND_LOW, up=BOUND_UP, eta=30.0)
+toolbox.register("mutate", tools.mutPolynomialBounded,
+                 low=BOUND_LOW, up=BOUND_UP, eta=20.0, indpb=0.05)
+toolbox.register("select", tools.selNSGA2)
+
+'''
 toolbox.register("mate", tools.cxTwoPoint)
 toolbox.register("mutate", tools.mutFlipBit, indpb=0.05)
 toolbox.register("select", tools.selNSGA2)
-
+'''
 toolbox.register("map", map)
 
 stats = tools.Statistics(lambda ind: ind.fitness.values)
-stats.register("avg", numpy.mean)
-stats.register("std", numpy.std)
-stats.register("min", numpy.min)
-stats.register("max", numpy.max)
+stats.register("avg", numpy.mean, axis=0)
+stats.register("std", numpy.std, axis=0)
+stats.register("min", numpy.min, axis=0)
+stats.register("max", numpy.max, axis=0)
 
 # Początkowa liczba wysp
 ISLANDS = 10
 
-# Domyślna funkcja migracji - pierścień
-# toolbox.register("migrate", tools.migRing, k=15, selection=tools.selBest)
-
-# dodanie migracji - mig.migSel to funkcja migracji selekcji konwekcyjnej
-# toolbox.register("migrate", mig.migSel,
-#                 numOfIslands=ISLANDS)
 
 # dodanie migracji - mig.migSelOneFrontOneIsland - kazdy front pareto na innej wyspie
 toolbox.register("migrate", mig.migSelOneFrontOneIsland)
 
+#toolbox.register("migrate", tools.migRing, k = 15, selection = tools.selBest)
+
 
 # liczba generacji, jak często następuje migracja (co ile zmian całej populacji)
-NGEN, FREQ = 20, 1
+NGEN, FREQ = 40, 1
 
 # ngen = FREQ oznacza ile wykonań algorytmu się wykona przy jednym uruchomieniu funkcji
 toolbox.register("algorithm", algorithms.eaSimple, toolbox=toolbox,
@@ -70,7 +76,7 @@ hallOfFame = tools.HallOfFame(1)
 logbooks = []
 
 # utworzenie populacji początkowej
-islands = [toolbox.population(n=20) for i in range(ISLANDS)]
+islands = [toolbox.population(n=300) for i in range(ISLANDS)]
 for i in range(0, NGEN, FREQ):
     results = toolbox.map(toolbox.algorithm, islands)
 
