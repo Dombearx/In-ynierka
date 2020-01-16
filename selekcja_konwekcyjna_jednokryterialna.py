@@ -63,6 +63,7 @@ res = []
 numOfIterations = 1
 logbooks = []
 
+# Zapisuje n najlepszych osobników (tutaj n = 1)
 hallOfFame = tools.HallOfFame(1)
 
 for _ in range(0, numOfIterations):
@@ -76,6 +77,7 @@ for _ in range(0, numOfIterations):
 
         islands = ziped[0]
 
+        # Jeżeli znajdzie lepszego osobnika niż najlepszy obecnie, to nadpisuje go
         for island in islands:
             hallOfFame.update(island)
 
@@ -86,6 +88,7 @@ for _ in range(0, numOfIterations):
             for k, logbook in enumerate(ziped[1]):
                 logbooks[k] += logbook
 
+        # Jeżeli wartość funkcji celu najlepszego osobnika jest optymalna to kończymy przetwarzanie
         if(hallOfFame[0].fitness.values[0] == 100):
             break
 
@@ -93,5 +96,6 @@ for _ in range(0, numOfIterations):
 
 
 # Jeden logbook to zapis z jednej wyspy
+# 0 - stan przed mutacjami i krzyżowaniem, ale po migracji z porzedniej iteracji
 for logbook in logbooks:
     print(logbook)
