@@ -38,7 +38,7 @@ ISLANDS = 10
 toolbox.register("migrate", tools.migRing, k=15, selection=tools.selBest)
 
 # dodanie migracji - mig.migSel to funkcja migracji selekcji konwekcyjnej
-#toolbox.register("migrate", mig.migSel, numOfIslands=ISLANDS)
+# toolbox.register("migrate", mig.migSel, numOfIslands=ISLANDS)
 
 stats = tools.Statistics(lambda ind: ind.fitness.values)
 stats.register("avg", numpy.mean)
@@ -46,8 +46,8 @@ stats.register("std", numpy.std)
 stats.register("min", numpy.min)
 stats.register("max", numpy.max)
 
-logbook = tools.Logbook()
-logbook.header = "gen", "evals", "std", "min", "avg", "max"
+#logbook = tools.Logbook()
+#logbook.header = "gen", "evals", "std", "min", "avg", "max"
 
 
 # liczba generacji, jak często następuje migracja (co ile zmian całej populacji)
@@ -64,18 +64,14 @@ toolbox.register("algorithm", algorithms.eaSimple, toolbox=toolbox,
 # utworzenie populacji początkowej
 res = []
 numOfIterations = 1
+#logbook = tools.Logbook()
 logbooks = []
-
-
 for _ in range(0, numOfIterations):
     start_time = time.time()
     islands = [toolbox.population(n=300) for i in range(ISLANDS)]
     for i in range(0, NGEN, FREQ):
 
         results = toolbox.map(toolbox.algorithm, islands)
-
-        #islands = [island for island, logbook in results]
-        #logbooks = [logbook for island, logbook in results]
 
         ziped = list(map(list, zip(*results)))
 
@@ -85,8 +81,8 @@ for _ in range(0, numOfIterations):
             for logbook in ziped[1]:
                 logbooks.append(logbook)
         else:
-            for i, logbook in enumerate(ziped[1]):
-                logbooks[i].append(logbook)
+            for k, logbook in enumerate(ziped[1]):
+                logbooks[k] += logbook
 
         toolbox.migrate(islands)
 
