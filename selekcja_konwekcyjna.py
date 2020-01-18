@@ -52,7 +52,7 @@ ISLANDS = 10
 
 
 # dodanie migracji - mig.migSelOneFrontOneIsland - kazdy front pareto na innej wyspie
-toolbox.register("migrate", tools.migSelOneFrontOneIsland)
+toolbox.register("migrate", mig.migSelOneFrontOneIsland)
 
 
 # liczba generacji, jak często następuje migracja (co ile zmian całej populacji)
