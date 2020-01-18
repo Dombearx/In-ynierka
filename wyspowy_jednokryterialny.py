@@ -37,35 +37,27 @@ ISLANDS = 10
 # Domyślna funkcja migracji - pierścień
 toolbox.register("migrate", tools.migRing, k=15, selection=tools.selBest)
 
-# dodanie migracji - mig.migSel to funkcja migracji selekcji konwekcyjnej
-# toolbox.register("migrate", mig.migSel, numOfIslands=ISLANDS)
-
 stats = tools.Statistics(lambda ind: ind.fitness.values)
 stats.register("avg", numpy.mean)
 stats.register("std", numpy.std)
 stats.register("min", numpy.min)
 stats.register("max", numpy.max)
 
-#logbook = tools.Logbook()
-#logbook.header = "gen", "evals", "std", "min", "avg", "max"
-
-
 # liczba generacji, jak często następuje migracja (co ile zmian całej populacji)
-NGEN, FREQ = 10, 2
+NGEN, FREQ = 200, 1
 
 CXPB, MUTPB = 0.5, 0.2
 # ngen = FREQ oznacza ile wykonań algorytmu się wykona przy jednym uruchomieniu funkcji
 toolbox.register("algorithm", algorithms.eaSimple, toolbox=toolbox,
                  stats=stats, cxpb=CXPB, mutpb=MUTPB, ngen=FREQ, verbose=False)
 
-# toolbox.register("algorithm", algorithms.varAnd, toolbox=toolbox,
-#                 cxpb=0.5, mutpb=0.2)
-
 # utworzenie populacji początkowej
-res = []
 numOfIterations = 1
-#logbook = tools.Logbook()
 logbooks = []
+
+# Zapisuje n najlepszych osobników (tutaj n = 1)
+hallOfFame = tools.HallOfFame(1)
+
 for _ in range(0, numOfIterations):
     start_time = time.time()
     islands = [toolbox.population(n=300) for i in range(ISLANDS)]
@@ -77,6 +69,10 @@ for _ in range(0, numOfIterations):
 
         islands = ziped[0]
 
+        # Jeżeli znajdzie lepszego osobnika niż najlepszy obecnie, to nadpisuje go
+        for island in islands:
+            hallOfFame.update(island)
+
         if i == 0:
             for logbook in ziped[1]:
                 logbooks.append(logbook)
@@ -84,7 +80,16 @@ for _ in range(0, numOfIterations):
             for k, logbook in enumerate(ziped[1]):
                 logbooks[k] += logbook
 
+        # Jeżeli wartość funkcji celu najlepszego osobnika jest optymalna to kończymy przetwarzanie
+        if(hallOfFame[0].fitness.values[0] == 100):
+            break
+
         toolbox.migrate(islands)
 
+
+# Jeden logbook to zapis z jednej wyspy
+# 0 - stan przed mutacjami i krzyżowaniem, ale po migracji z porzedniej iteracji
 for logbook in logbooks:
     print(logbook)
+
+print("Hall of fame:", hallOfFame[0].fitness)

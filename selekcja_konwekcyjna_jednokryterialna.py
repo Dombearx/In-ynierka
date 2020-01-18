@@ -34,9 +34,6 @@ toolbox.register("map", map)
 # Początkowa liczba wysp
 ISLANDS = 10
 
-# Domyślna funkcja migracji - pierścień
-#toolbox.register("migrate", tools.migRing, k=15, selection=tools.selBest)
-
 # dodanie migracji - mig.migSel to funkcja migracji selekcji konwekcyjnej
 toolbox.register("migrate", mig.migSel, numOfIslands=ISLANDS)
 
@@ -54,12 +51,7 @@ CXPB, MUTPB = 0.5, 0.2
 toolbox.register("algorithm", algorithms.eaSimple, toolbox=toolbox,
                  stats=stats, cxpb=CXPB, mutpb=MUTPB, ngen=FREQ, verbose=False)
 
-# toolbox.register("algorithm", algorithms.varAnd, toolbox=toolbox,
-#                 cxpb=0.5, mutpb=0.2)
-
 # utworzenie populacji początkowej
-
-res = []
 numOfIterations = 1
 logbooks = []
 
@@ -99,3 +91,5 @@ for _ in range(0, numOfIterations):
 # 0 - stan przed mutacjami i krzyżowaniem, ale po migracji z porzedniej iteracji
 for logbook in logbooks:
     print(logbook)
+
+print("Hall of fame:", hallOfFame[0].fitness)

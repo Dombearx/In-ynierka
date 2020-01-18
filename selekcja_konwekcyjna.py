@@ -22,9 +22,9 @@ def lenFromMid(individual):
         average += abs(0.5 - v)
 
     return average / len(individual)
-    # Funkcja celu - suma wartości atrybutów
 
 
+# Funkcja celu - suma wartości atrybutów, odległość każdego atrybutu od wartości 0.5
 def evalOneMax(individual):
     return (sum(individual), lenFromMid(individual))
 
@@ -39,11 +39,6 @@ toolbox.register("mutate", tools.mutPolynomialBounded,
                  low=BOUND_LOW, up=BOUND_UP, eta=20.0, indpb=0.05)
 toolbox.register("select", tools.selNSGA2)
 
-'''
-toolbox.register("mate", tools.cxTwoPoint)
-toolbox.register("mutate", tools.mutFlipBit, indpb=0.05)
-toolbox.register("select", tools.selNSGA2)
-'''
 toolbox.register("map", map)
 
 stats = tools.Statistics(lambda ind: ind.fitness.values)
@@ -57,9 +52,7 @@ ISLANDS = 10
 
 
 # dodanie migracji - mig.migSelOneFrontOneIsland - kazdy front pareto na innej wyspie
-toolbox.register("migrate", mig.migSelOneFrontOneIsland)
-
-#toolbox.register("migrate", tools.migRing, k = 15, selection = tools.selBest)
+toolbox.register("migrate", tools.migSelOneFrontOneIsland)
 
 
 # liczba generacji, jak często następuje migracja (co ile zmian całej populacji)
@@ -69,10 +62,8 @@ NGEN, FREQ = 40, 1
 toolbox.register("algorithm", algorithms.eaSimple, toolbox=toolbox,
                  stats=stats, cxpb=0.5, mutpb=0.2, ngen=FREQ, verbose=False)
 
-# toolbox.register("algorithm", algorithms.varAnd, toolbox=toolbox,
-#                 cxpb=0.5, mutpb=0.2)
 
-hallOfFame = tools.HallOfFame(1)
+hallOfFame = tools.ParetoFront()
 logbooks = []
 
 # utworzenie populacji początkowej
@@ -106,4 +97,6 @@ for i in range(0, NGEN, FREQ):
 for logbook in logbooks:
     print(logbook)
 
-print("HallOfFamer:", hallOfFame[0].fitness)
+print("Hall of fame:")
+for individual in hallOfFame:
+    print(individual.fitness)
