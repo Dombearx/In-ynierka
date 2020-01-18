@@ -9,65 +9,6 @@ import statistics
 def sortByFitness(wholePopulation):
     wholePopulation.sort(key=lambda x: x.fitness, reverse=False)
 
-
-def getMinFitness(island):
-
-    minFit = island[0].fitness
-
-    for individual in island[1:]:
-        if individual.fitness < minFit:
-            minFit = individual.fitness
-
-    return minFit
-
-
-def getMaxFitness(island):
-
-    maxFit = island[0].fitness
-
-    for individual in island[1:]:
-        if individual.fitness > maxFit:
-            maxFit = individual.fitness
-
-    return maxFit
-
-
-def getMeanFitness(island):
-
-    fitnesses = []
-
-    for individual in island:
-        fitnesses.append(individual.fitness.values[0])
-
-    return statistics.mean(fitnesses)
-
-
-def isDominating(individual, other):
-    count = 0
-    for x, y in zip(individual, other):
-        if x < y:
-            return False
-        if x == y:
-            count += 1
-
-    if count == len(individual):
-        return False
-    return True
-
-
-# jeszcze nie gotowe - użyjemy wbudownej funckji jak będzie działać
-
-
-def getParetoFronts(wholePopulation):
-    fronts = []
-
-    currentFront = []
-    for individual in wholePopulation:
-        for otherIndividual in wholePopulation:
-            if(isDominating(otherIndividual, individual)):
-                continue
-    return fronts
-
 # Migracja frontami pareto ze stałą liczbą wysp
 
 
