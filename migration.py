@@ -95,3 +95,31 @@ def migSel(populations, numOfIslands):
 
     if(len(populations) > len(newIslands)):
         del populations[len(newIslands):]
+
+
+def migIslandsRandom(populations, numOfIslands):
+    wholePopulation = []
+
+    for population in populations:
+        wholePopulation += population
+
+    islandSize = int(len(wholePopulation) / numOfIslands)
+
+    newIslands = []
+
+    random.shuffle(wholePopulation)
+
+    for i in range(0, len(wholePopulation), islandSize):
+        newIslands.append(wholePopulation[i:i + islandSize])
+        lastIndex = i + islandSize
+
+    newIslands[-1] += wholePopulation[lastIndex:]
+
+    for i, newIs in enumerate(newIslands):
+        if(i >= len(populations)):
+            populations.append(newIs)
+        else:
+            populations[i] = newIs
+
+    if(len(populations) > len(newIslands)):
+        del populations[len(newIslands):]
