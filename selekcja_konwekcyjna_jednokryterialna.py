@@ -1,9 +1,10 @@
 import random
-from deap import creator, base, tools, algorithms
+from deap import creator, base, tools, algorithms, benchmarks
 import migration as mig
 import time
 import utils
 import numpy
+import pickle
 
 # Każdy osobnik - individual ma liczbę atrybutó3 = len(weights), jeżeli -1 - minimaliazcja, jeżeli 1 - maksymalizacja
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))
@@ -12,16 +13,18 @@ creator.create("Individual", list, fitness=creator.FitnessMax)
 toolbox = base.Toolbox()
 
 # Atrybut typu bool - 0 albo 1
-toolbox.register("attr_bool", random.randint, 0, 1)
+toolbox.register("attr_float", random.uniform, -100, 100)
 toolbox.register("individual", tools.initRepeat, creator.Individual,
-                 toolbox.attr_bool, 100)
+                 toolbox.attr_float, 2)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
 # Funkcja celu - suma wartości atrybutów
 
+benchmarkName = "h1"
+
 
 def evalOneMax(individual):
-    return sum(individual),
+    return sum(benchmarks.h1(individual)),
 
 
 toolbox.register("evaluate", evalOneMax)
@@ -52,13 +55,14 @@ toolbox.register("algorithm", algorithms.eaSimple, toolbox=toolbox,
                  stats=stats, cxpb=CXPB, mutpb=MUTPB, ngen=FREQ, verbose=False)
 
 # utworzenie populacji początkowej
-numOfIterations = 1
-logbooks = []
+numOfIterations = 10
+benchmarkResults = []
 
-# Zapisuje n najlepszych osobników (tutaj n = 1)
-hallOfFame = tools.HallOfFame(1)
 
 for _ in range(0, numOfIterations):
+    logbooks = []
+    # Zapisuje n najlepszych osobników (tutaj n = 1)
+    hallOfFame = tools.HallOfFame(1)
     start_time = time.time()
     islands = [toolbox.population(n=300) for i in range(ISLANDS)]
     for i in range(0, NGEN, FREQ):
@@ -86,10 +90,18 @@ for _ in range(0, numOfIterations):
 
         toolbox.migrate(islands)
 
+    # Save results
+    benchmarkResults.append(utils.result(logbooks, hallOfFame))
 
+'''
 # Jeden logbook to zapis z jednej wyspy
 # 0 - stan przed mutacjami i krzyżowaniem, ale po migracji z porzedniej iteracji
 for logbook in logbooks:
     print(logbook)
 
-print("Hall of fame:", hallOfFame[0].fitness)
+print("Hall of fame:", hallOfFame[0], hallOfFame[0].fitness)
+'''
+
+pickleOut = open("selKonw_" + benchmarkName + ".pickle", "wb")
+pickle.dump(benchmarkResults, pickleOut)
+pickleOut.close()

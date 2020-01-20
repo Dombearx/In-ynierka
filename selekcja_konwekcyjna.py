@@ -56,7 +56,7 @@ toolbox.register("migrate", mig.migSelOneFrontOneIsland)
 
 
 # liczba generacji, jak często następuje migracja (co ile zmian całej populacji)
-NGEN, FREQ = 40, 1
+NGEN, FREQ = 200, 1
 
 # ngen = FREQ oznacza ile wykonań algorytmu się wykona przy jednym uruchomieniu funkcji
 toolbox.register("algorithm", algorithms.eaSimple, toolbox=toolbox,
