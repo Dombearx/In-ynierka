@@ -1,5 +1,5 @@
 import random
-from deap import creator, base, tools, algorithms
+from deap import creator, base, tools, algorithms, benchmarks
 import migration as mig
 import time
 import utils
@@ -12,16 +12,16 @@ creator.create("Individual", list, fitness=creator.FitnessMax)
 toolbox = base.Toolbox()
 
 # Atrybut typu bool - 0 albo 1
-toolbox.register("attr_bool", random.randint, 0, 1)
+toolbox.register("attr_float", random.uniform, -100, 100)
 toolbox.register("individual", tools.initRepeat, creator.Individual,
-                 toolbox.attr_bool, 100)
+                 toolbox.attr_float, 2)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
 # Funkcja celu - suma wartości atrybutów
 
 
 def evalOneMax(individual):
-    return sum(individual),
+    return sum(benchmarks.h1(individual)),
 
 
 toolbox.register("evaluate", evalOneMax)
@@ -35,7 +35,7 @@ toolbox.register("map", map)
 ISLANDS = 10
 
 # Domyślna funkcja migracji - pierścień
-toolbox.register("migrate", tools.migRing, k=15, selection=tools.selBest)
+toolbox.register("migrate", mig.migIslandsRandom, numOfIslands=ISLANDS)
 
 stats = tools.Statistics(lambda ind: ind.fitness.values)
 stats.register("avg", numpy.mean)
@@ -92,4 +92,4 @@ for _ in range(0, numOfIterations):
 for logbook in logbooks:
     print(logbook)
 
-print("Hall of fame:", hallOfFame[0].fitness)
+print("Hall of fame:", hallOfFame[0], hallOfFame[0].fitness)
