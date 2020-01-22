@@ -60,6 +60,7 @@ toolbox.register("evaluate", evalBenchmark)
 toolbox.register("mate", tools.cxOnePoint)
 toolbox.register("mutate", tools.mutPolynomialBounded,
                  low=-100, up=100, indpb=0.1, eta=3.5)
+
 toolbox.register("select", tools.selTournament, tournsize=3)
 
 toolbox.register("map", map)
