@@ -17,10 +17,10 @@ import os
 # MNOŻNIK MIGRACJI - argv[3]
 # MAX LICZBA WYWOŁAŃ BEZ POPRAWY - argv[4]
 
-if(len(sys.argv) != 5):
+if(len(sys.argv) != 6):
     print("Wrong number of arguments!")
     print("Usage:", sys.argv[0],
-          "BENCHMARK_NAME NUM_OF_ISLANDS MIGRATIONS_RATIO")
+          "BENCHMARK_NAME NUM_OF_ISLANDS MIGRATIONS_RATIO MODEL")
     sys.exit()
 
 
@@ -37,7 +37,7 @@ MIGRATION_RATIO = int(sys.argv[3])
 max_iterations_wo_improvement = int(sys.argv[4])
 
 # model
-MODEL = int(sys.argv[5])
+MODEL = sys.argv[5]
 
 
 POPULATION_SIZE = 100
