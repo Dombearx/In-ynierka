@@ -74,7 +74,7 @@ def getAckleyToolBox():
     upper_bound = 30
 
     def evalBenchmark(individual):
-        return benchmarks.himmelblau(individual)
+        return benchmarks.ackley(individual)
 
     toolbox = registerStandard(
         lower_bound, upper_bound, attributes, creator, evalBenchmark)
@@ -110,7 +110,7 @@ def getSchwefelToolBox():
     upper_bound = 500
 
     def evalBenchmark(individual):
-        return benchmarks.rastrigin(individual)
+        return benchmarks.schwefel(individual)
 
     toolbox = registerStandard(
         lower_bound, upper_bound, attributes, creator, evalBenchmark)
