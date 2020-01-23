@@ -21,10 +21,6 @@ def changedMutGaussian(individual, mu, sigma, index, upper_bound, lower_bound):
     return individual,
 
 
-def halfCxUniform(ind1, ind2):
-    return tools.cxUniform(ind1, ind2, 0.5)
-
-
 def randomMutGaussian(ind, mu, sigma, upper_bound, lower_bound):
     index = random.randint(0, len(ind)-1)
 
@@ -41,7 +37,7 @@ def registerStandard(lower_bound, upper_bound, attributes, creator, evalBenchmar
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
     toolbox.register("evaluate", evalBenchmark)
-    toolbox.register("mate", halfCxUniform)
+    toolbox.register("mate", tools.cxUniform, ipdb=0.5)
     toolbox.register("mutate", randomMutGaussian, mu=(upper_bound - lower_bound)/2,
                      sigma=(upper_bound - lower_bound)/10, upper_bound=upper_bound, lower_bound=lower_bound)
 
