@@ -36,6 +36,9 @@ MIGRATION_RATIO = int(sys.argv[3])
 # max liczba wywołań bez poprawy
 max_iterations_wo_improvement = int(sys.argv[4])
 
+# model
+MODEL = int(sys.argv[5])
+
 
 POPULATION_SIZE = 100
 ISLAND_POPULATION_SIZE = int(POPULATION_SIZE / NUM_OF_ISLANDS)
@@ -61,8 +64,14 @@ if(BENCHMARK_NAME == "rastrigin"):
 
 toolbox.register("map", map)
 
+
 # Migrate method
-toolbox.register("migrate", mig.migSel, numOfIslands=NUM_OF_ISLANDS)
+if(MODEL == "convection"):
+    toolbox.register("migrate", mig.migSel, numOfIslands=NUM_OF_ISLANDS)
+
+if(MODEL == "island"):
+    toolbox.register("migrate", mig.migIslandsRandom,
+                     numOfIslands=NUM_OF_ISLANDS)
 
 # Statistics
 stats = tools.Statistics(lambda ind: ind.fitness.values)
@@ -144,7 +153,7 @@ print("Hall of fame:", hallOfFame[0], hallOfFame[0].fitness)
 
 # Save results
 pickleOut = open("./out/" + BENCHMARK_NAME + "_" + str(NUM_OF_ISLANDS) +
-                 "_" + str(MIGRATION_RATIO) + "pickle", "wb")
+                 "_" + str(MIGRATION_RATIO) + "_" + MODEL + ".pickle", "wb")
 pickle.dump(utils.result(
     logbooks, bestIndividuals, time.time() - start_time), pickleOut)
 pickleOut.close()
