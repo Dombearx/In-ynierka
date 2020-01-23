@@ -119,6 +119,7 @@ while(iterations_wo_improvement < max_iterations_wo_improvement / FREQ):
         print("improvement after:", (iterations_wo_improvement + 1) *
               FREQ, "Fitness:", hallOfFame[0].fitness.values[0])
         iterations_wo_improvement = 0
+
         previous_fitness = hallOfFame[0].fitness.values
 
     if(iterations_wo_improvement * FREQ == int(max_iterations_wo_improvement / 2)):
