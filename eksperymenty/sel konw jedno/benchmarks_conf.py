@@ -15,9 +15,9 @@ except ImportError:
     from collections import Sequenc
 
 
-def changedMutGaussian(individual, mu, sigma, index):
+def changedMutGaussian(individual, mu, sigma, index, upper_bound, lower_bound):
     individual[index] += random.gauss(mu, sigma)
-
+    individual[index] = max(min(individual[index], upper_bound), lower_bound)
     return individual,
 
 
@@ -25,10 +25,10 @@ def halfCxUniform(ind1, ind2):
     return tools.cxUniform(ind1, ind2, 0.5)
 
 
-def randomMutGaussian(ind, mu, sigma):
+def randomMutGaussian(ind, mu, sigma, upper_bound, lower_bound):
     index = random.randint(0, len(ind)-1)
 
-    return changedMutGaussian(ind, mu=mu, sigma=sigma, index=index)
+    return changedMutGaussian(ind, mu=mu, sigma=sigma, index=index, upper_bound=upper_bound, lower_bound=lower_bound)
 
 
 def registerStandard(lower_bound, upper_bound, attributes, creator, evalBenchmark):
@@ -42,8 +42,8 @@ def registerStandard(lower_bound, upper_bound, attributes, creator, evalBenchmar
 
     toolbox.register("evaluate", evalBenchmark)
     toolbox.register("mate", halfCxUniform)
-    toolbox.register("mutate", randomMutGaussian, mu=0,
-                     sigma=(upper_bound - lower_bound)/10)
+    toolbox.register("mutate", randomMutGaussian, mu=(upper_bound - lower_bound)/2,
+                     sigma=(upper_bound - lower_bound)/10, upper_bound=upper_bound, lower_bound=lower_bound)
 
     toolbox.register("select", tools.selTournament, tournsize=3)
 
@@ -73,7 +73,7 @@ def getAckleyToolBox():
     creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
     creator.create("Individual", list, fitness=creator.FitnessMin)
 
-    attributes = 20
+    attributes = 10
     lower_bound = -15
     upper_bound = 30
 
@@ -109,7 +109,7 @@ def getSchwefelToolBox():
     creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
     creator.create("Individual", list, fitness=creator.FitnessMin)
 
-    attributes = 20
+    attributes = 10
     lower_bound = -500
     upper_bound = 500
 
@@ -127,7 +127,7 @@ def getRastriginToolBox():
     creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
     creator.create("Individual", list, fitness=creator.FitnessMin)
 
-    attributes = 20
+    attributes = 10
     lower_bound = -5.12
     upper_bound = 5.12
 
