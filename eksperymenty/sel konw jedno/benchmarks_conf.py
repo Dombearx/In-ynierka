@@ -38,7 +38,7 @@ def registerStandard(lower_bound, upper_bound, attributes, creator, evalBenchmar
 
     toolbox.register("evaluate", evalBenchmark)
     toolbox.register("mate", tools.cxUniform, indpb=0.5)
-    toolbox.register("mutate", randomMutGaussian, mu=(upper_bound - lower_bound)/2,
+    toolbox.register("mutate", randomMutGaussian, mu=(upper_bound + lower_bound)/2,
                      sigma=(upper_bound - lower_bound)/10, upper_bound=upper_bound, lower_bound=lower_bound)
 
     toolbox.register("select", tools.selTournament, tournsize=3)
