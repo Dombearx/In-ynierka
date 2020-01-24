@@ -18,7 +18,7 @@ benchmarks = [
     "rastrigin"
 ]
 for model in models:
-    for benchmarkName in benchmarks:
+    for benchmarkName in benchmarks[1:2]:
         for islandNum in num_of_islands:
             for ratio in migration_ratio:
                 for maxIterations in num_of_iterations:

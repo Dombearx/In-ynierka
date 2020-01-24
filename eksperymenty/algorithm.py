@@ -21,7 +21,7 @@ import os
 if(len(sys.argv) != 6):
     print("Wrong number of arguments!")
     print("Usage:", sys.argv[0],
-          "BENCHMARK_NAME NUM_OF_ISLANDS MIGRATIONS_RATIO MODEL")
+          "BENCHMARK_NAME NUM_OF_ISLANDS MIGRATIONS_RATIO max_iterations_wo_improvement MODEL")
     sys.exit()
 
 

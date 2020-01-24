@@ -44,10 +44,10 @@ benchmarks = [
     "rastrigin"
 ]
 
-benchmarkName = benchmarks[3]
+benchmarkName = benchmarks[1]
 islandNum = num_of_islands[0]
 ratio = migration_ratio[0]
-model = models[0]
+model = models[1]
 
 pickleIn = open("./out/" + benchmarkName + "_" + islandNum +
                 "_" + ratio + "_" + model + ".pickle", "rb")
@@ -77,56 +77,80 @@ for islandNumber, logbook in enumerate(logbooks):
         fit_mins, fit_avgs, fit_stds, fit_maxs, islandNumber))
 
 
-benchmarkName = benchmarks[3]
-islandNum = num_of_islands[0]
-ratio = migration_ratio[0]
-model = models[0]
 fig.tight_layout()
-fig.suptitle("Benchmark: " + benchmarks[3] + " Number of islands: " +
+fig.suptitle("Benchmark: " + benchmarkName + " Number of islands: " +
              islandNum + " Migration every " + str(int(ratio)*100) + " iterations Model: " + model)
 for island in benchmark.islands:
 
     # Wykres liniowy
-    #fit_mins = hallOfFamers
+    # fit_mins = hallOfFamers
     islandNumber = 0
     x = int(island.islandNumber / 2)
     y = int(island.islandNumber % 2)
 
-    line1 = axs[x, y].plot([_ for _ in range(0, len(island.fit_mins))],
+    generations = [_ for _ in range(0, len(island.fit_mins))]
+
+    line1 = axs[x, y].plot(generations,
                            island.fit_mins, "b-", label="Minimum Fitness")
     # line2 = axs[x, y].plot([_ for _ in range(0, len(fit_mins))],
     #                       fit_avgs, "r-", label="Average Fitness")
     axs[x, y].set_xlabel("Generation")
-    #axs[x, y].set_yscale('log')
+    # axs[x, y].set_yscale('log')
     axs[x, y].set_ylabel("Fitness", color="b")
     axs[x, y].set_title("ISLAND " + str(island.islandNumber))
     for tl in axs[x, y].get_yticklabels():
         tl.set_color("b")
 
-        lns = line1  # + line2
-        labs = [l.get_label() for l in lns]
-        axs[x, y].legend(lns, labs, loc="center right")
+    lns = line1  # + line2
+    labs = [l.get_label() for l in lns]
+    axs[x, y].legend(lns, labs, loc="center right")
+
+    z = np.polyfit(generations,
+                   island.fit_mins, 1)
+    p = np.poly1d(np.squeeze(z))
+    axs[x, y].plot(generations, p(generations), "r--")
+
 
 fit_mins = hallOfFamers
+
+# fit_mins = list(
+#    map(min, zip(fit_mins for island.fit_mins in benchmark.islands)))
+
+
+fit_mins = list(
+    map(min, zip(*[island.fit_mins for island in benchmark.islands])))
+
+
+minimum = fit_mins[0]
+
+for index, elem in enumerate(fit_mins):
+    minimum = min(minimum, elem)
+    fit_mins[index] = minimum
+
+# pp.pprint(fit_mins[0:1])
 x = int(2)
 y = int(1)
+migrations = [_ for _ in range(0, len(fit_mins))]
 
-line1 = axs[x, y].plot([_ for _ in range(0, len(fit_mins))],
+line1 = axs[x, y].plot(migrations,
                        fit_mins, "b-", label="Minimum Fitness")
 # line2 = axs[x, y].plot([_ for _ in range(0, len(fit_mins))],
 #                       fit_avgs, "r-", label="Average Fitness")
 axs[x, y].set_xlabel("Generation")
-#axs[x, y].set_yscale('log')
+# axs[x, y].set_yscale('log')
 axs[x, y].set_ylabel("Fitness", color="b")
 axs[x, y].set_title("GLOBAL")
 for tl in axs[x, y].get_yticklabels():
     tl.set_color("b")
 
-    lns = line1  # + line2
-    labs = [l.get_label() for l in lns]
-    axs[x, y].legend(lns, labs, loc="center right")
+lns = line1  # + line2
+labs = [l.get_label() for l in lns]
+axs[x, y].legend(lns, labs, loc="center right")
 
-
+z = np.polyfit(migrations,
+               fit_mins, 1)
+p = np.poly1d(np.squeeze(z))
+axs[x, y].plot(migrations, p(migrations), "r--")
 plt.show()
 
 '''
