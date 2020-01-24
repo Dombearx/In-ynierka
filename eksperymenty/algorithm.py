@@ -111,7 +111,7 @@ print("Islands number:", NUM_OF_ISLANDS)
 print("Migration every", FREQ, "steps")
 print("Max iterations without improvement:", max_iterations_wo_improvement)
 print("----------START---------")
-while(iterations_wo_improvement < max_iterations_wo_improvement / FREQ):
+while(iterations_wo_improvement <= max_iterations_wo_improvement / FREQ):
 
     results = toolbox.map(toolbox.algorithm, islands)
 
