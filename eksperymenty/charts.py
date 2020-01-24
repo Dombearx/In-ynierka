@@ -9,70 +9,49 @@ import math
 
 class IslandResults():
 
-    def __init__(self, min, avg, std, max, islandNumber):
-        self.min = min
-        self.avg = avg
-        self.std = std
-        self.max = max
+    def __init__(self, fit_mins, fit_avgs, fit_stds, fit_maxs, islandNumber):
+        self.fit_mins = fit_mins
+        self.fit_avgs = fit_avgs
+        self.fit_stds = fit_stds
+        self.fit_maxs = fit_maxs
         self.islandNumber = islandNumber
 
 
 class Benchmark():
 
-    def __init__(self, numOfIslands):
-        self.benchmarkAverangeMax = []
-        self.benchmarkAverangeMin = []
-        self.benchmarkAverangeAvg = []
-        self.benchmarkAverangeStd = []
-        self.numOfIslands = numOfIslands
-
-        for _ in range(0, numOfIslands):
-            self.benchmarkAverangeMax.append([])
-            self.benchmarkAverangeMin.append([])
-            self.benchmarkAverangeAvg.append([])
-            self.benchmarkAverangeStd.append([])
-
-    def setIslandData(self, min, avg, std, max, islandNumber):
-
-        self.benchmarkAverangeMax[islandNumber].append(max)
-        self.benchmarkAverangeMin[islandNumber].append(min)
-        self.benchmarkAverangeAvg[islandNumber].append(avg)
-        self.benchmarkAverangeStd[islandNumber].append(std)
-
-    def calcAvgs(self):
+    def __init__(self):
         self.islands = []
 
-        for island in range(0, self.numOfIslands):
-
-            avgMax = [sum(x)/len(x)
-                      for x in zip(*self.benchmarkAverangeMax[island])]
-
-            avgAvg = [sum(x)/len(x)
-                      for x in zip(*self.benchmarkAverangeAvg[island])]
-
-            avgStd = [sum(x)/len(x)
-                      for x in zip(*self.benchmarkAverangeStd[island])]
-
-            avgMin = [sum(x)/len(x)
-                      for x in zip(*self.benchmarkAverangeMin[island])]
-
-            self.islands.append(IslandResults(
-                avgMin, avgAvg, avgStd, avgMax, island))
+    def addIsland(self, island):
+        self.islands.append(island)
 
 
-benchmarkName = "sel_himmelblau.py"
-FREQ = 50
-ISLANDS = 5
-NGEN = 20000
-numOfIterations = 1
+num_of_iterations = ["10000"]
 
+num_of_islands = ["5", "10"]
+migration_ratio = ["2", "10", "20"]
 
-name = "sel_himmelblau.py_200_5_200000_2_0"
+models = [
+    "convection",
+    "island"
+]
 
-# pickleIn = open("./out/" + benchmarkName + "_" + str(FREQ) + "_" + str(ISLANDS) +
-#                "_" + str(NGEN) + "_" + str(numOfIterations) + ".pickle", "rb")
+benchmarks = [
+    "h1",
+    "ackley",
+    "himmelblau",
+    "schwefel",
+    "rastrigin"
+]
 
-pickleIn = open("./out/" + name + ".pickle", "rb")
+benchmarkName = benchmarks[3]
+islandNum = num_of_islands[0]
+ratio = migration_ratio[0]
+model = models[0]
+
+pickleIn = open("./out/" + benchmarkName + "_" + islandNum +
+                "_" + ratio + "_" + model + ".pickle", "rb")
+
 result = pickle.load(pickleIn)
 
 pickleIn.close()
@@ -81,18 +60,11 @@ logbooks = result.logbooks
 hallOfFamers = result.hallOfFamers
 time = result.time
 
-islands_max = []
-islands_min = []
-islands_avg = []
-islands_std = []
 
-fig, axs = plt.subplots(int(ISLANDS / 2), 2)
+fig, axs = plt.subplots(math.ceil(int(num_of_islands[0]) / 2), 2)
 
-benchmark = Benchmark(ISLANDS)
+benchmark = Benchmark()
 
-
-# for benchmarkResult in benchmarkResults:
-'''
 for islandNumber, logbook in enumerate(logbooks):
 
     gen = logbook.select("gen")
@@ -101,44 +73,59 @@ for islandNumber, logbook in enumerate(logbooks):
     fit_stds = logbook.select("std")
     fit_maxs = logbook.select("max")
 
-    # islands_max.append(max(fit_maxs))
-    # islands_min.append(min(fit_mins))
-    # islands_avg.append(statistics.mean(fit_avgs))
-    # islands_avg.append(statistics.mean(fit_stds))
+    benchmark.addIsland(IslandResults(
+        fit_mins, fit_avgs, fit_stds, fit_maxs, islandNumber))
 
-    # benchmark.setIslandData(
-    #    fit_mins, fit_avgs, fit_stds, fit_maxs, islandNumber)
 
-benchmark.calcAvgs()
+benchmarkName = benchmarks[3]
+islandNum = num_of_islands[0]
+ratio = migration_ratio[0]
+model = models[0]
+fig.tight_layout()
+fig.suptitle("Benchmark: " + benchmarks[3] + " Number of islands: " +
+             islandNum + " Migration every " + str(int(ratio)*100) + " iterations Model: " + model)
+for island in benchmark.islands:
 
-islandsAvgMax = benchmark.avgMax
-islandsAvgAvg = benchmark.avgAvg
-islandsAvgStd = benchmark.avgStd
-islandsAvgMin = benchmark.avgMin
-'''
+    # Wykres liniowy
+    #fit_mins = hallOfFamers
+    islandNumber = 0
+    x = int(island.islandNumber / 2)
+    y = int(island.islandNumber % 2)
 
-# for islandNumber, hallOfFamers in enumerate(hallOfFamers):
+    line1 = axs[x, y].plot([_ for _ in range(0, len(island.fit_mins))],
+                           island.fit_mins, "b-", label="Minimum Fitness")
+    # line2 = axs[x, y].plot([_ for _ in range(0, len(fit_mins))],
+    #                       fit_avgs, "r-", label="Average Fitness")
+    axs[x, y].set_xlabel("Generation")
+    #axs[x, y].set_yscale('log')
+    axs[x, y].set_ylabel("Fitness", color="b")
+    axs[x, y].set_title("ISLAND " + str(island.islandNumber))
+    for tl in axs[x, y].get_yticklabels():
+        tl.set_color("b")
 
-# Wykres liniowy
+        lns = line1  # + line2
+        labs = [l.get_label() for l in lns]
+        axs[x, y].legend(lns, labs, loc="center right")
+
 fit_mins = hallOfFamers
-islandNumber = 0
-x = int(islandNumber / 2)
-y = int(islandNumber % 2)
+x = int(2)
+y = int(1)
 
 line1 = axs[x, y].plot([_ for _ in range(0, len(fit_mins))],
                        fit_mins, "b-", label="Minimum Fitness")
 # line2 = axs[x, y].plot([_ for _ in range(0, len(fit_mins))],
 #                       fit_avgs, "r-", label="Average Fitness")
 axs[x, y].set_xlabel("Generation")
-axs[x, y].set_yscale('log')
+#axs[x, y].set_yscale('log')
 axs[x, y].set_ylabel("Fitness", color="b")
-axs[x, y].set_title("ISLAND " + str(islandNumber))
+axs[x, y].set_title("GLOBAL")
 for tl in axs[x, y].get_yticklabels():
     tl.set_color("b")
 
     lns = line1  # + line2
     labs = [l.get_label() for l in lns]
     axs[x, y].legend(lns, labs, loc="center right")
+
 
 plt.show()
 

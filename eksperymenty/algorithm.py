@@ -16,6 +16,7 @@ import os
 # LICZBA WYSP - argv[2]
 # MNOŻNIK MIGRACJI - argv[3]
 # MAX LICZBA WYWOŁAŃ BEZ POPRAWY - argv[4]
+# MODEL - argv[5]
 
 if(len(sys.argv) != 6):
     print("Wrong number of arguments!")
@@ -81,13 +82,15 @@ stats.register("min", numpy.min)
 stats.register("max", numpy.max)
 
 
-# ngen = FREQ oznacza ile wykonań algorytmu się wykona przy jednym uruchomieniu funkcji
-toolbox.register("algorithm", algorithms.eaSimple, toolbox=toolbox,
-                 stats=stats, cxpb=CXPB, mutpb=MUTPB, ngen=FREQ, verbose=False)
-
-logbooks = []
 # Zapisuje n najlepszych osobników (tutaj n = 1)
 hallOfFame = tools.HallOfFame(1)
+
+# ngen = FREQ oznacza ile wykonań algorytmu się wykona przy jednym uruchomieniu funkcji
+toolbox.register("algorithm", algorithms.eaSimple, toolbox=toolbox,
+                 stats=stats, cxpb=CXPB, mutpb=MUTPB, ngen=FREQ, verbose=False, halloffame=hallOfFame)
+
+logbooks = []
+
 bestIndividuals = []
 start_time = time.time()
 iterations_wo_improvement = 0
@@ -116,8 +119,6 @@ while(iterations_wo_improvement < max_iterations_wo_improvement / FREQ):
     islands = ziped[0]
 
     # Jeżeli znajdzie lepszego osobnika niż najlepszy obecnie, to nadpisuje go
-    for island in islands:
-        hallOfFame.update(island)
 
     if previous_fitness == None:
         previous_fitness = hallOfFame[0].fitness.values
@@ -142,7 +143,6 @@ while(iterations_wo_improvement < max_iterations_wo_improvement / FREQ):
         first = False
     else:
         for k, logbook in enumerate(ziped[1]):
-            # print(logbook)
             logbooks[k] += logbook
 
     toolbox.migrate(islands)
