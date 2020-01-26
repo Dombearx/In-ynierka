@@ -119,6 +119,7 @@ while(iterations_wo_improvement <= max_iterations_wo_improvement / FREQ):
                   * FREQ, "Fitness:", hallOfFame[0].fitness.values)
             iterations_wo_improvement = -1
             previous_pareto_front = deepcopy(hallOfFame)
+            break
 
     print("w/o improvement:", iterations_wo_improvement)
     iterations_wo_improvement += 1
