@@ -20,10 +20,10 @@ from copy import deepcopy
 # MAX LICZBA WYWOŁAŃ BEZ POPRAWY - argv[4]
 # MODEL - argv[5]
 
-if(len(sys.argv) != 6):
+if(len(sys.argv) != 7):
     print("Wrong number of arguments!")
     print("Usage:", sys.argv[0],
-          "BENCHMARK_NAME NUM_OF_ISLANDS MIGRATIONS_RATIO max_iterations_wo_improvement MODEL")
+          "BENCHMARK_NAME NUM_OF_ISLANDS MIGRATIONS_RATIO max_iterations_wo_improvement MODEL NUM_OF_OBJECTIVES")
     sys.exit()
 
 
@@ -42,6 +42,8 @@ max_iterations_wo_improvement = int(sys.argv[4])
 # model
 MODEL = sys.argv[5]
 
+NUM_OF_OBJECTIVES = int(sys.argv[6])
+
 
 POPULATION_SIZE = 100
 ISLAND_POPULATION_SIZE = int(POPULATION_SIZE / NUM_OF_ISLANDS)
@@ -50,16 +52,16 @@ CXPB, MUTPB = 0.1, 1.0
 
 
 if(BENCHMARK_NAME == "dtlz1"):
-    toolbox = bc.getDTLZ1ToolBox(3)
+    toolbox = bc.getDTLZ1ToolBox(NUM_OF_OBJECTIVES)
 
 if(BENCHMARK_NAME == "dtlz2"):
-    toolbox = bc.getDTLZ2ToolBox(3)
+    toolbox = bc.getDTLZ2ToolBox(NUM_OF_OBJECTIVES)
 
 if(BENCHMARK_NAME == "dtlz3"):
-    toolbox = bc.getDTLZ3ToolBox(3)
+    toolbox = bc.getDTLZ3ToolBox(NUM_OF_OBJECTIVES)
 
 if(BENCHMARK_NAME == "dtlz4"):
-    toolbox = bc.getDTLZ4ToolBox(3)
+    toolbox = bc.getDTLZ4ToolBox(NUM_OF_OBJECTIVES)
 
 
 toolbox.register("map", map)
@@ -86,7 +88,9 @@ stats.register("max", numpy.max, axis=0)
 
 
 # Zapisuje n najlepszych osobników (tutaj n = 1)
-hallOfFame = tools.ParetoFront()
+#hallOfFame = tools.ParetoFront()
+
+hallOfFame = nsga2_alg.myParetoFront(50)
 
 # ngen = FREQ oznacza ile wykonań algorytmu się wykona przy jednym uruchomieniu funkcji
 toolbox.register("algorithm", nsga2_alg.nsga2Algorithm, toolbox=toolbox,
@@ -114,6 +118,7 @@ print("Migration every", FREQ, "steps")
 print("Max iterations without improvement:", max_iterations_wo_improvement)
 print("Model:", MODEL)
 print("----------START---------")
+mig_start_time = time.time()
 while(iterations_wo_improvement <= max_iterations_wo_improvement / FREQ):
 
     results = toolbox.map(toolbox.algorithm, islands)
@@ -121,8 +126,12 @@ while(iterations_wo_improvement <= max_iterations_wo_improvement / FREQ):
     ziped = list(map(list, zip(*results)))
     islands = ziped[0]
 
-    # Jeżeli znajdzie lepszego osobnika niż najlepszy obecnie, to nadpisuje go
+    removed = ziped[2]
 
+    print(removed)
+
+    # Jeżeli znajdzie lepszego osobnika niż najlepszy obecnie, to nadpisuje go
+    '''
     if previous_pareto_front == None:
         previous_pareto_front = deepcopy(hallOfFame)
 
@@ -133,12 +142,19 @@ while(iterations_wo_improvement <= max_iterations_wo_improvement / FREQ):
             iterations_wo_improvement = -1
             previous_pareto_front = deepcopy(hallOfFame)
             break
-
+    
     iterations_wo_improvement += 1
 
     if(iterations_wo_improvement * FREQ == int(max_iterations_wo_improvement / 2)):
         print(iterations_wo_improvement * FREQ,
               "iterations without improvement...")
+    '''
+
+    iterations_wo_improvement += 1
+    if(iterations_wo_improvement * FREQ % int(max_iterations_wo_improvement / 10) == 0):
+        print("Progress:", (iterations_wo_improvement *
+                            FREQ / max_iterations_wo_improvement) * 100, "%  time:", round(time.time() - mig_start_time, 2))
+        mig_start_time = time.time()
 
     bestInMigration = []
     for ind in hallOfFame:
@@ -162,7 +178,7 @@ print("Hall of fame[0]:", hallOfFame[0], hallOfFame[0].fitness)
 
 # Save results
 pickleOut = open("./out/" + BENCHMARK_NAME + "_" + str(NUM_OF_ISLANDS) +
-                 "_" + str(MIGRATION_RATIO) + "_" + MODEL + ".pickle", "wb")
+                 "_" + str(MIGRATION_RATIO) + "_" + MODEL + "_" + str(NUM_OF_OBJECTIVES) + ".pickle", "wb")
 pickle.dump(utils.result(
     logbooks, bestIndividuals, time.time() - start_time), pickleOut)
 pickleOut.close()

@@ -1,6 +1,8 @@
 import array
 import random
 import json
+import time
+
 
 import numpy
 
@@ -12,6 +14,75 @@ from deap import benchmarks
 from deap.benchmarks.tools import diversity, convergence, hypervolume
 from deap import creator
 from deap import tools
+from operator import eq
+from copy import deepcopy
+
+
+class myParetoFront():
+
+    def __init__(self, maxLen, similar=eq):
+        self.keys = list()
+        self.items = list()
+        self.maxLen = maxLen
+        self.similar = similar
+
+    def insert(self, item):
+        item = deepcopy(item)
+
+        self.items.append(item)
+        self.keys.append(item.fitness)
+
+    def remove(self, index):
+
+        del self.keys[index]
+        del self.items[index]
+
+    def replace(self, index, item):
+        item = deepcopy(item)
+
+        self.keys[index] = item
+        self.items[index] = item.fitness
+
+    def update(self, population):
+
+        for ind in population:
+            is_dominated = False
+            dominates_one = False
+            has_twin = False
+            to_remove = []
+            for i, hofer in enumerate(self):    # hofer = hall of famer
+                if not dominates_one and hofer.fitness.dominates(ind.fitness):
+                    is_dominated = True
+                    break
+                elif ind.fitness.dominates(hofer.fitness):
+                    dominates_one = True
+                    to_remove.append(i)
+                elif ind.fitness == hofer.fitness and self.similar(ind, hofer):
+                    has_twin = True
+                    break
+
+            for i in reversed(to_remove):       # Remove the dominated hofer
+                self.remove(i)
+            if not is_dominated and not has_twin:
+                if(len(self) < self.maxLen):
+                    self.insert(ind)
+
+        return len(to_remove)
+
+    def __len__(self):
+        return len(self.items)
+
+    def __getitem__(self, i):
+        return self.items[i]
+
+    def __iter__(self):
+        return iter(self.items)
+
+    def __reversed__(self):
+        return reversed(self.items)
+
+    def __str__(self):
+        return str(self.items)
 
 
 def nsga2Algorithm(population, toolbox, cxpb, mutpb, ngen, stats=None, halloffame=None, verbose=__debug__):
@@ -39,8 +110,9 @@ def nsga2Algorithm(population, toolbox, cxpb, mutpb, ngen, stats=None, halloffam
 
     if verbose:
         print(logbook.stream)
-
     # Begin the generational process
+
+    removed = 0
     for gen in range(1, ngen + 1):
         # Vary the population
 
@@ -70,7 +142,8 @@ def nsga2Algorithm(population, toolbox, cxpb, mutpb, ngen, stats=None, halloffam
             ind.fitness.values = fit
 
         if halloffame is not None:
-            halloffame.update(offspring)
+            removed += halloffame.update(offspring)
+
         # Select the next generation population
         population = toolbox.select(population + offspring, numOfIndividuals)
         record = stats.compile(population) if stats else {}
@@ -78,4 +151,4 @@ def nsga2Algorithm(population, toolbox, cxpb, mutpb, ngen, stats=None, halloffam
         if verbose:
             print(logbook.stream)
 
-    return population, logbook
+    return population, logbook, removed
