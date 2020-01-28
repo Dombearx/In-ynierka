@@ -90,7 +90,7 @@ stats.register("max", numpy.max, axis=0)
 # Zapisuje n najlepszych osobników (tutaj n = 1)
 #hallOfFame = tools.ParetoFront()
 
-hallOfFame = nsga2_alg.myParetoFront(50)
+hallOfFame = nsga2_alg.myParetoFront(100)
 
 # ngen = FREQ oznacza ile wykonań algorytmu się wykona przy jednym uruchomieniu funkcji
 toolbox.register("algorithm", nsga2_alg.nsga2Algorithm, toolbox=toolbox,

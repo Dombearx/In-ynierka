@@ -113,6 +113,7 @@ def nsga2Algorithm(population, toolbox, cxpb, mutpb, ngen, stats=None, halloffam
     # Begin the generational process
 
     removed = 0
+    start_time = time.time()
     for gen in range(1, ngen + 1):
         # Vary the population
 
@@ -150,5 +151,5 @@ def nsga2Algorithm(population, toolbox, cxpb, mutpb, ngen, stats=None, halloffam
         logbook.record(gen=gen, evals=len(invalid_ind), **record)
         if verbose:
             print(logbook.stream)
-
+    print("Time:", round(time.time() - start_time, 2))
     return population, logbook, removed

@@ -1,20 +1,23 @@
-import pprint as pp
+def sortByFitness(wholePopulation):
+    wholePopulation.sort(key=lambda x: x.fitness, reverse=False)
 
-lista = [
-    [1, 2, 3, 4],
-    [1, 2, 3, 4],
-    [3, 4, 5, 6],
-    [7, 8, 6, 4]
+
+class t:
+
+    def __init__(self, f):
+        self.fitness = f
+
+
+tab = [
+    t(10),
+    t(20),
+    t(1),
+    t(13),
+    t(26)
 ]
 
-t1 = [1, 2, 3, 4]
-t2 = [3, 4, 5, 6]
 
-pp.pprint(lista)
+sortByFitness(tab)
 
-zipped = list(zip(*[elem for elem in lista]))
-zipped2 = list(zip(t1, t2))
-
-
-pp.pprint(zipped)
-pp.pprint(zipped2)
+for t in tab:
+    print(t.fitness)
